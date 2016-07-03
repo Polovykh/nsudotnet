@@ -1,0 +1,66 @@
+﻿@model TestWebApp.Models.SearchCriterion
+
+@using TestWebApp.Models
+@using TestWebApp.Models.Entities
+
+@{
+    ViewBag.Title = "Поиск";
+}
+
+<div>
+    <h4>Поиск фильма</h4>
+    <form name="searchForm" action="/Home/Index" method="post" onsubmit="return validation();">
+        <div class="form-group" style="display: inline-block">
+            <label>Критерий поиска</label>
+            @Html.EnumDropDownListFor(m => m.Type, new {@class = "form-control"})
+        </div>
+        <div style="display: inline-block">
+            <label>Искомая строка</label>
+            <input name="string" class="form-control" value="@Model.String"/>
+        </div>
+        <div style="display: inline-block">
+            <label></label>
+            <input type="submit" class="form-control" value="Поиск"/>
+        </div>
+    </form>
+
+    <script>
+        function validation() {
+            var form = document.forms["searchForm"];
+            var searched = form.elements["string"].value;
+            if (searched !== "")
+                form.submit();
+
+            return false;
+        }
+    </script>
+
+    <table class="table table-condensed">
+        <thead>
+        <tr>
+            <td><b>Название фильма</b></td>
+            <td><b>Жанр</b></td>
+            <td><b>Год выпуска</b></td>
+            <td><b>Актёры</b></td>
+            <td><b>Ссылка</b></td>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var film in ViewBag.Films)
+        {
+            <tr>
+                <td>@film.Name</td>
+                <td>@film.Genre</td>
+                <td>@film.Year</td>
+                <td>
+                    @foreach (var actor in film.Actors)
+                    {
+                        @actor.Name<br>
+                    }
+                </td>
+                <td>@Html.ActionLink("Link", "Index", "Info", new {id = film.ID}, null)</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

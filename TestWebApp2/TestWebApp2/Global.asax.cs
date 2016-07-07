@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Data.Entity;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using TestWebApp2.Backend;
 
 namespace TestWebApp2
 {
@@ -12,6 +10,12 @@ namespace TestWebApp2
 	{
 		protected void Application_Start()
 		{
+			Database.SetInitializer(new DbInitializer());
+			using (var ctx = new AppContext())
+			{
+				ctx.Database.Initialize(true);	
+			}
+
 			AreaRegistration.RegisterAllAreas();
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);

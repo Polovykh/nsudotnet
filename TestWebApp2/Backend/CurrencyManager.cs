@@ -7,6 +7,7 @@ using System.Threading;
 using System.Xml;
 using System.Xml.XPath;
 using TestWebApp2.Backend.Entities;
+using TestWebApp2.Backend.Repositories;
 
 namespace TestWebApp2.Backend
 {
@@ -14,26 +15,25 @@ namespace TestWebApp2.Backend
 	{
 		public static void Initialize(AppContext context)
 		{
-			var currencies = GetCurrencies(context);
-			var currentDateTime = GetCurrencyRates(context, currencies);
-			var timer = new Timer((s) =>
-			                      {
-				                      var state = (State) s;
-				                      state.LastUpdateTime = GetCurrencyRates(new AppContext(), state.Currencies,
-				                                                              state.LastUpdateTime);
-			                      },
-			                      new State()
-			                      {
-				                      Currencies = currencies,
-				                      LastUpdateTime = currentDateTime
-			                      },
-			                      new DateTime(0, 0, 1).Millisecond,
-			                      new DateTime(0, 0, 1).Millisecond);
+			var dbUnit = new DbUnit(context);
+			var currencies = GetCurrencies(dbUnit);
+			var currentDateTime = GetCurrencyRates(dbUnit, currencies);
+			var state = new State()
+			            {
+				            Currencies = currencies,
+				            LastUpdateTime = currentDateTime
+			            };
+			Timer = new Timer(UpdateCurrencyRates,
+			                  state,
+			                  (long) TimeSpan.FromDays(1)
+			                                 .TotalMilliseconds,
+			                  (long) TimeSpan.FromDays(1)
+			                                 .TotalMilliseconds);
 		}
 
 		#region Main functions
 
-		private static ICollection<Currency> GetCurrencies(AppContext context)
+		private static ICollection<Currency> GetCurrencies(IDbUnit dbUnit)
 		{
 			var doc = new XmlDocument();
 			doc.Load("http://www.cbr.ru/scripts/XML_val.asp?d=0");
@@ -54,13 +54,13 @@ namespace TestWebApp2.Backend
 				                         Name = currencyName
 			                         }).ToList();
 
-			context.Currencies.AddRange(currencies);
-			context.SaveChanges();
+			dbUnit.Currencies.AddRange(currencies);
+			dbUnit.Complete();
 
 			return currencies;
 		}
 
-		private static DateTime GetCurrencyRates(AppContext context, IEnumerable<Currency> currencies,
+		private static DateTime GetCurrencyRates(IDbUnit dbUnit, IEnumerable<Currency> currencies,
 		                                         DateTime? startsWith = null)
 		{
 			var currentDateTime = DateTime.Now;
@@ -77,23 +77,39 @@ namespace TestWebApp2.Backend
 					throw new XPathException();
 				}
 
-				context.CurrencyRates.AddRange(from node in nodes.Cast<XmlNode>()
-				                               let date = DateTime.Parse(node?.Attributes?["Date"].Value)
-				                               let nominal = int.Parse(node["Nominal"]?.InnerText ?? "1")
-				                               let value = node["Value"]?.InnerText
-				                               where null != value
-				                               select new CurrencyRate()
-				                                      {
-					                                      CurrencyID = currency.ID,
-					                                      Currency = currency,
-					                                      Date = date,
-					                                      Value = decimal.Parse(value)/nominal
-				                                      });
+				dbUnit.CurrencyRates.AddRange(from node in nodes.Cast<XmlNode>()
+				                              let date = DateTime.Parse(node?.Attributes?["Date"].Value)
+				                              let nominal = int.Parse(node["Nominal"]?.InnerText ?? "1")
+				                              let value = node["Value"]?.InnerText
+				                              where null != value
+				                              select new CurrencyRate()
+				                                     {
+					                                     CurrencyID = currency.ID,
+					                                     Currency = currency,
+					                                     Date = date,
+					                                     Value = decimal.Parse(value)/nominal
+				                                     });
 			}
 
-			context.SaveChanges();
+			dbUnit.Complete();
 
 			return currentDateTime;
+		}
+
+		#endregion
+
+		#region Support members
+
+		private static Timer Timer { get; set; }
+
+		private static void UpdateCurrencyRates(object s)
+		{
+			var state = (State) s;
+			using (var dbUnit = new DbUnit())
+			{
+				state.LastUpdateTime = GetCurrencyRates(dbUnit, state.Currencies,
+				                                        state.LastUpdateTime);
+			}
 		}
 
 		#endregion

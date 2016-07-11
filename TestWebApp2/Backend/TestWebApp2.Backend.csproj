@@ -56,6 +56,14 @@
     <Compile Include="Entities\Currency.cs" />
     <Compile Include="Entities\CurrencyRate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\CurrenciesRepository.cs" />
+    <Compile Include="Repositories\CurrencyRatesRepository.cs" />
+    <Compile Include="Repositories\DbUnit.cs" />
+    <Compile Include="Repositories\ICurrenciesRepository.cs" />
+    <Compile Include="Repositories\ICurrencyRatesRepository.cs" />
+    <Compile Include="Repositories\IDbUnit.cs" />
+    <Compile Include="Repositories\IRepository.cs" />
+    <Compile Include="Repositories\Repository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

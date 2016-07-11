@@ -13,7 +13,7 @@ namespace TestWebApp2
 			Database.SetInitializer(new DbInitializer());
 			using (var ctx = new AppContext())
 			{
-				ctx.Database.Initialize(true);	
+				ctx.Database.Initialize(true);
 			}
 
 			AreaRegistration.RegisterAllAreas();

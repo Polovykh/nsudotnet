@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+using TestWebApp2.Backend.Repositories;
 
 namespace TestWebApp2.Controllers
 {
@@ -6,6 +7,11 @@ namespace TestWebApp2.Controllers
 	{
 		public ActionResult Index()
 		{
+			using (var dbUnit = new DbUnit())
+			{
+				var currencies = dbUnit.Currencies.GetAll();
+			}
+
 			return View();
 		}
 

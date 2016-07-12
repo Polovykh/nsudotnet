@@ -1,42 +1,31 @@
-﻿@model IEnumerable<TestWebApp2.Models.DateTimeXAxisChartData>
+﻿@model IEnumerable<TestWebApp2.Backend.Entities.CurrencyRate>
 @using JQChart.Web.Mvc
+
 @{
     ViewBag.Title = "Index";
 }
+
 @Scripts.Render("~/bundles/jqchart")
 
-<div>
-    @(Html.JQChart()
+@(Html.JQChart()
           .Chart(Model)
           .ID("jqChart")
-          .Width(500)
-          .Height(300)
-          .Title("Line Chart")
+          .Height(600)
+          .Title("Currencies Rates")
           .Animation(TimeSpan.FromSeconds(1))
           .Tooltips(el => el.TooltipsType(TooltipsType.Shared))
           .Axes(axis =>
                 {
                     axis.DateTimeAxis(Location.Bottom)
-                        .Labels(el => el.StringFormat("m/d/yy"));
-                }
-          )
+                        .Labels(el => el.StringFormat("dd/mm"));
+                })
           .Series(series =>
                   {
                       series.Line()
-                            .Title("Series 1")
+                            .Title("US Dollar")
                             .StrokeStyle("#418CF0")
                             .LineWidth(2)
-                            .XValues(el => el.ValueX)
-                            .YValues(el => el.ValueY1);
-
-                      series.Line()
-                            .Title("Series 2")
-                            .StrokeStyle("#FCB441")
-                            .LineWidth(2)
-                            .XValues(el => el.ValueX)
-                            .YValues(el => el.ValueY2);
-                  }
-          )
-          .Render()
-          )
-</div>
+                            .XValues(el => el.Date)
+                            .YValues(el => (double)(el.Value));
+                  })
+          .Render())

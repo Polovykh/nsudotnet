@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using TestWebApp2.Backend.Repositories;
+using TestWebApp2.Models;
 
 namespace TestWebApp2.Controllers
 {
@@ -12,7 +13,7 @@ namespace TestWebApp2.Controllers
 				var currencies = dbUnit.Currencies.GetAll();
 			}
 
-			return View();
+			return View(DateTimeXAxisChartData.GetLineChartData());
 		}
 
 		public ActionResult About()

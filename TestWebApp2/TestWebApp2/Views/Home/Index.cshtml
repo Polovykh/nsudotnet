@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TestWebApp2.Backend.Entities.CurrencyRate>
+﻿@model IEnumerable<TestWebApp2.Models.CurrenciesRatesModel>
 @using JQChart.Web.Mvc
 
 @{
@@ -10,22 +10,33 @@
 @(Html.JQChart()
           .Chart(Model)
           .ID("jqChart")
-          .Height(600)
+          .Height(700)
           .Title("Currencies Rates")
-          .Animation(TimeSpan.FromSeconds(1))
+          .Animation(TimeSpan.FromSeconds(0.8))
           .Tooltips(el => el.TooltipsType(TooltipsType.Shared))
           .Axes(axis =>
-                {
-                    axis.DateTimeAxis(Location.Bottom)
-                        .Labels(el => el.StringFormat("dd/mm"));
-                })
+          {
+              axis.DateTimeAxis(Location.Bottom)
+                  .Labels(el => el.StringFormat("dd/mm"));
+          })
           .Series(series =>
                   {
                       series.Line()
                             .Title("US Dollar")
-                            .StrokeStyle("#418CF0")
                             .LineWidth(2)
                             .XValues(el => el.Date)
-                            .YValues(el => (double)(el.Value));
+                            .YValues(el => el.USDollarRate);
+
+                      series.Line()
+                            .Title("China Yuan")
+                            .LineWidth(2)
+                            .XValues(el => el.Date)
+                            .YValues(el => el.ChinaYuanRate);
+
+                      series.Line()
+                            .Title("Japanese Yen")
+                            .LineWidth(2)
+                            .XValues(el => el.Date)
+                            .YValues(el => el.JapaneseYenRate);
                   })
           .Render())

@@ -87,7 +87,7 @@ namespace TestWebApp2.Backend
 					                                     CurrencyID = currency.ID,
 					                                     Currency = currency,
 					                                     Date = date,
-					                                     Value = double.Parse(value, new CultureInfo("ru-Ru"))/nominal
+					                                     Value = decimal.Parse(value, new CultureInfo("ru-Ru"))/nominal
 				                                     });
 			}
 

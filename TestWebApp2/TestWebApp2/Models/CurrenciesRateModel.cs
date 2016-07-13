@@ -21,9 +21,9 @@ namespace TestWebApp2.Models
 				        select new CurrenciesRatesModel()
 				               {
 					               Date = dollarRate.Date,
-					               USDollarRate = (double) dollarRate.Value,
-					               ChinaYuanRate = (double) chinaYuanRate.Value,
-					               JapaneseYenRate = (double) japaneseYenRate.Value
+					               USDollarRate = dollarRate.Value,
+					               ChinaYuanRate = chinaYuanRate.Value,
+					               JapaneseYenRate = japaneseYenRate.Value
 				               }).ToList();
 			}
 		}

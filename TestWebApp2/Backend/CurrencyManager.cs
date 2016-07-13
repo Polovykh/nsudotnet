@@ -78,7 +78,7 @@ namespace TestWebApp2.Backend
 				}
 
 				dbUnit.CurrencyRates.AddRange(from node in nodes.Cast<XmlNode>()
-				                              let date = DateTime.Parse(node?.Attributes?["Date"].Value)
+				                              let date = DateTime.Parse(node?.Attributes?["Date"].Value, new CultureInfo("ru-Ru"))
 				                              let nominal = int.Parse(node["Nominal"]?.InnerText ?? "1")
 				                              let value = node["Value"]?.InnerText
 				                              where null != value
@@ -87,7 +87,7 @@ namespace TestWebApp2.Backend
 					                                     CurrencyID = currency.ID,
 					                                     Currency = currency,
 					                                     Date = date,
-					                                     Value = decimal.Parse(value)/nominal
+					                                     Value = double.Parse(value, new CultureInfo("ru-Ru"))/nominal
 				                                     });
 			}
 

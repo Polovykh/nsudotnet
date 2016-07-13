@@ -9,7 +9,7 @@ namespace TestWebApp2.Backend.Entities
 		[Key]
 		public long ID { get; set; }
 		public DateTime Date { get; set; }
-		public decimal Value { get; set; }
+		public double Value { get; set; }
 
 		[ForeignKey("CurrencyID")]
 		public virtual Currency Currency { get; set; }
